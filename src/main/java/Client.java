@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,11 +40,15 @@ public class Client {
 
     public void makePostRequest() {
         // Set up the body data
-        String message = "Hello servlet";
+        Patient p=new Patient("John",1, 1234565789);
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(p);
+        String message = jsonString;
+        System.out.println(jsonString);
         byte[] body = message.getBytes(StandardCharsets.UTF_8);
         URL myURL = null;
         try {
-            myURL = new URL("http://localhost:8080/PROG3-T5-by-cwyip");
+            myURL = new URL("https://prog3-t5-by-cwyip.herokuapp.com/patients");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -55,7 +61,8 @@ public class Client {
             conn.setRequestProperty("Content-Length", Integer.toString(body.length));
             conn.setDoOutput(true);
             // Write the body of the request
-            try (OutputStream outputStream = conn.getOutputStream()) { outputStream.write(body, 0, body.length);
+            try (OutputStream outputStream = conn.getOutputStream()) {
+                outputStream.write(body, 0, body.length);
             }
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
             String inputLine;
