@@ -1,9 +1,11 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class Client {
     public void makeGetRequest() {
@@ -32,5 +34,38 @@ public class Client {
             e.printStackTrace();
         }
 
+    }
+
+    public void makePostRequest() {
+        // Set up the body data
+        String message = "Hello servlet";
+        byte[] body = message.getBytes(StandardCharsets.UTF_8);
+        URL myURL = null;
+        try {
+            myURL = new URL("http://localhost:8080/PROG3-T5-by-cwyip");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection conn = null;
+        try {
+            conn = (HttpURLConnection) myURL.openConnection();
+            // Set up the header
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Accept", "text/html"); conn.setRequestProperty("charset", "utf-8");
+            conn.setRequestProperty("Content-Length", Integer.toString(body.length));
+            conn.setDoOutput(true);
+            // Write the body of the request
+            try (OutputStream outputStream = conn.getOutputStream()) { outputStream.write(body, 0, body.length);
+            }
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+            String inputLine;
+            // Read the body of the response
+            while ((inputLine = bufferedReader.readLine()) != null) {
+                System.out.println(inputLine);
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
